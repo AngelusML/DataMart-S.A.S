@@ -176,20 +176,16 @@ SELECT source_system, MIN(invoice_ts_utc), MAX(invoice_ts_utc), COUNT(*)
 FROM fact_sales
 GROUP BY source_system;
 
--- Productos por categoría (% de productos sin categoría, sección 4.6 de DECISIONES.md)
 SELECT category, COUNT(*) AS productos,
        ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 1) AS pct
 FROM dim_product
 GROUP BY category
 ORDER BY productos DESC;
 
--- % del revenue bruto que viene de ventas sin customer ID (sección 4.1 de DECISIONES.md)
 SELECT ROUND(100.0 * SUM(gross_revenue) FILTER (WHERE NOT is_identified_customer)
              / SUM(gross_revenue), 1) AS pct_revenue_sin_cliente
 FROM fact_sales;
 
--- Prueba de idempotencia: correr antes y después de relanzar el DAG; los 5 valores
--- deben ser idénticos (sección 5 de DECISIONES.md)
 SELECT (SELECT COUNT(*) FROM fact_sales)                       AS ventas,
        (SELECT COUNT(*) FROM fact_returns)                     AS devoluciones,
        (SELECT COUNT(*) FROM etl_rejections)                   AS rechazos,

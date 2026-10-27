@@ -52,6 +52,21 @@ Reporte generado con `scripts/explore_sources.py` sobre los archivos crudos, ant
 | CustomerNo | 55 |
 | Country | 0 |
 
+## Tipos de dato
+
+Los CSV se leen como texto para no perder información (por ejemplo, la `C` de las facturas canceladas o la letra final de códigos como `85123A`). Cada columna se convierte a su tipo final en la transformación:
+
+| Columna estándar | data.csv | online_retail_II.csv | Tipo en origen | Tipo final en PostgreSQL |
+|---|---|---|---|---|
+| `invoice_no` | `InvoiceNo` | `TransactionNo` | texto (puede empezar con `C`) | `VARCHAR(20)` |
+| `product_code` | `StockCode` | `ProductNo` | texto (dígitos + letras) | `VARCHAR(20)` |
+| `description` | `Description` | `ProductName` | texto | `VARCHAR(255)` |
+| `quantity` | `Quantity` | `Quantity` | entero (puede ser negativo) | `INTEGER` |
+| `invoice_date` | `InvoiceDate` | `Date` | texto con fecha `m/d/Y H:M` / `m/d/Y` | `TIMESTAMPTZ` (UTC) + `DATE` |
+| `unit_price` | `UnitPrice` | `Price` | decimal | `NUMERIC(12,3)` |
+| `customer_id` | `CustomerID` | `CustomerNo` | número con vacíos | `VARCHAR(20)` (`SIN_CLIENTE` si viene vacío) |
+| `country` | `Country` | `Country` | texto | `VARCHAR(60)` |
+
 ## Hallazgos y cómo se trató cada uno
 
 | Hallazgo | Fuente | Tratamiento en el pipeline |
