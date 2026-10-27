@@ -1,0 +1,70 @@
+// Pegar este contenido en https://dbdiagram.io/d  para ver el diagrama
+// Exportar como PNG y guardarlo en docs/modelo_datos.png
+
+Table dim_product {
+  product_code varchar [pk, note: 'MAYÚSCULAS, sin espacios']
+  product_name varchar [note: 'nombre canónico = descripción más frecuente']
+  category varchar [note: 'Electrónica, Hogar, Ropa, Deportes, Papelería, Sin categoría']
+  description_variants int
+}
+
+Table fact_sales {
+  sale_id bigserial [pk]
+  invoice_no varchar
+  product_code varchar [ref: > dim_product.product_code]
+  description_raw varchar
+  customer_id varchar [note: "'SIN_CLIENTE' si no viene"]
+  is_identified_customer boolean
+  country varchar
+  quantity int [note: '> 0']
+  unit_price numeric [note: '> 0']
+  gross_revenue numeric [note: 'quantity * unit_price']
+  currency char(3)
+  invoice_ts_utc timestamptz
+  invoice_date_utc date
+  source_system varchar [note: 'ventas_diarias | historico']
+}
+
+Table fact_returns {
+  return_id bigserial [pk]
+  invoice_no varchar
+  product_code varchar [ref: > dim_product.product_code]
+  description_raw varchar
+  customer_id varchar
+  is_identified_customer boolean
+  country varchar
+  return_type varchar [note: 'CANCELACION | AJUSTE']
+  returned_quantity int [note: 'positivo']
+  unit_price numeric
+  return_amount numeric
+  currency char(3)
+  invoice_ts_utc timestamptz
+  invoice_date_utc date
+  source_system varchar
+}
+
+Table fact_daily_product_revenue {
+  revenue_date date [pk]
+  product_code varchar [pk, ref: > dim_product.product_code]
+  units_sold int
+  units_returned int
+  gross_revenue numeric
+  return_amount numeric
+  net_revenue numeric [note: 'gross_revenue - return_amount']
+}
+
+Table etl_rejections {
+  rejection_id bigserial [pk]
+  source_system varchar
+  rejection_reason varchar
+  invoice_no varchar
+  product_code varchar
+  raw_record jsonb
+  load_date date
+}
+
+Table etl_run_summary {
+  load_date date [pk]
+  metric varchar [pk]
+  value bigint
+}

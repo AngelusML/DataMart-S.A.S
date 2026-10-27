@@ -1,0 +1,22 @@
+# Secretos
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Airflow local
+logs/
+airflow.db
+*.pid
+
+# Temporales / binarios
+*.pkl
+*.parquet
+staging/
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

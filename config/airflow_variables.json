@@ -1,0 +1,7 @@
+{
+  "datamart_sales_file": "data.csv",
+  "datamart_history_file": "online_retail_II.csv",
+  "datamart_source_timezone": "Europe/London",
+  "datamart_max_reject_pct": "10",
+  "datamart_staging_dir": "/tmp/datamart_staging"
+}
